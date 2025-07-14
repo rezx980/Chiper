@@ -1,0 +1,104 @@
+
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <title>مُشفر الحروف A-Z</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#121212">
+  <link rel="manifest" href="manifest.json">
+  <link rel="icon" href="icon-192.png" type="image/png">
+  <script>
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker.register('service-worker.js');
+    }
+  </script>
+  <style>
+    body {
+      font-family: 'Cairo', Arial, sans-serif;
+      background: #121212;
+      color: white;
+      text-align: center;
+      padding: 30px;
+    }
+    textarea {
+      width: 90%;
+      height: 100px;
+      margin: 10px 0;
+      background: #1e1e1e;
+      color: #00ff99;
+      border: 1px solid #333;
+      padding: 10px;
+      font-size: 16px;
+    }
+    button {
+      padding: 10px 20px;
+      margin: 5px;
+      background: #00ff99;
+      border: none;
+      color: #121212;
+      font-weight: bold;
+      cursor: pointer;
+    }
+    button:hover {
+      background: #00cc77;
+    }
+  </style>
+</head>
+<body>
+  <h1>🔐 أداة التشفير - A-Z فقط</h1>
+  <textarea id="inputText" placeholder="اكتب النص هنا باستخدام حروف A-Z فقط..."></textarea><br>
+  <button onclick="encrypt()">تشفير</button>
+  <button onclick="decrypt()">فك التشفير</button>
+  <button onclick="copyOutput()">📋 نسخ</button>
+  <textarea id="outputText" placeholder="النتيجة ستظهر هنا..."></textarea>
+
+  <script>
+    const cipherMap = {
+      'A': '@', 'B': 'ß', 'C': '₡', 'D': 'Ð', 'E': '3',
+      'F': '₣', 'G': '9', 'H': '#', 'I': '!', 'J': ']',
+      'K': '₭', 'L': '1', 'M': '₥', 'N': '₪', 'O': '0',
+      'P': 'þ', 'Q': 'Q̶', 'R': '®', 'S': '$', 'T': '+',
+      'U': 'µ', 'V': '√', 'W': 'ω', 'X': '×', 'Y': '¥',
+      'Z': '2'
+    };
+
+    const reverseMap = {};
+    for (let key in cipherMap) {
+      reverseMap[cipherMap[key]] = key;
+    }
+
+    function encrypt() {
+      const input = document.getElementById("inputText").value.toUpperCase();
+      let result = "";
+      for (let char of input) {
+        result += cipherMap[char] || char;
+      }
+      document.getElementById("outputText").value = result;
+    }
+
+    function decrypt() {
+      const input = document.getElementById("inputText").value;
+      let result = "";
+      let buffer = "";
+
+      for (let i = 0; i < input.length; i++) {
+        buffer += input[i];
+        if (reverseMap[buffer]) {
+          result += reverseMap[buffer];
+          buffer = "";
+        } else if (buffer.length > 1 && !Object.keys(reverseMap).some(k => k.startsWith(buffer))) {
+          result += buffer[0];
+          buffer = buffer.slice(1);
+        }
+      }
+      document.getElementById("outputText").value = result;
+    }
+
+    function copyOutput() {
+      const text = document.getElementById("outputText").value;
+      navigator.clipboard.writeText(text).then(() => alert("✅ تم النسخ!"));
+    }
+  </script>
+</body>
+</html>
